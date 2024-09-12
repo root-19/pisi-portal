@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="-1">
+  <meta http-equiv="refresh" content="8; url=$(link-login)">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+  <title>Pisowifi - Rates</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="assets/jquery.min.js"></script>
+  <script src="config.js" defer></script>
+  <script>
+  var mac="$(mac)",uIp="$(ip)",interfaceName="$(interface-name)";function preventBack(){window.history.forward()}setTimeout("preventBack()",0),window.onunload=function(){}
+  </script>
+</head>
+<body onload="populatePromoRates(0)">
+  <div class="main">
+    <div id="ratesBody"></div>
+    <script>
+    var interfaceName="$(interface-name)";function populatePromoRates(e){$.ajax({type:"GET",url:"http://"+vendorIpAddress+"/getRates?rateType=",crossOrigin:!0,contentType:"text/plain",success:function(a){$("#loaderDiv").attr("class","spinner hidden");var t=a.split("|"),e="";for(r in t){var s=t[r].split("#");e+="<div class='rholder'>",e+="<div class='rdata1'><span>Rate: <\/span>",e+=s[0],e+="<\/div>",e+="<div class='rdata2'><span >Validity: ",e+=secondsToDhms(60*parseInt(s[3])),e+="<\/span><\/div>",e+="<\/div>"}$("#ratesBody").html(e)},error:function(a,t){setTimeout(function(){e<2&&populatePromoRates(e+1)},1e3)}})}function secondsToDhms(a){a=Number(a);var t=Math.floor(a/86400),e=Math.floor(a%86400/3600),r=Math.floor(a%3600/60),s=Math.floor(a%60);return(0<t?t+(1==t?" Day ":" Days "):"")+" "+(0<e?e+"":"0")+"h : "+(0<r?r+"":"0")+"m : "+(0<s?s+"":"0")+"s"}
+    </script>
+    <div class="groupBTN">
+      <center>
+        <a class="ratesBTN" href="login.html"><button class="homeBTN">HOME</button></a>
+      </center>
+    </div><span class="footer">Created by: MCGI PRODUCTION</span>
+    <div id="loaderDiv" class="spinner">
+      <center>
+        <img src="assets/loader.gif" alt="loader">
+      </center>
+    </div>
+  </div>
+</body>
+</html>

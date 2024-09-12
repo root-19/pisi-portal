@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="-1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+  <title>Pisowifi - Insert Coin</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="assets/jquery.min.js"></script>
+  <script src="config.js" defer></script>
+  <script>
+  var uIp="$(ip)",mac="$(mac)",interfaceName="$(interface-name)"
+  </script>
+</head>
+<body>
+  $(if chap-id)
+  <form name="sendin" action="$(link-login-only)" method="post" style="display:none" id="sendin">
+    <input type="hidden" name="username"> <input type="hidden" name="password"> <input type="hidden" name="dst" value="$(link-orig)"> <input type="hidden" name="popup" value="true">
+  </form>
+  <script src="assets/md5.js"></script> 
+  <script>
+
+  function doLogin(){return document.sendin.username.value=voucher,document.sendin.password.value=hexMD5("$(chap-id)$(chap-challenge)"),document.sendin.submit(),!1}
+  </script>$(endif) $(if error) 
+  <script>
+
+  history.pushState(null,null,null)
+  </script>$(endif)
+  <div class="main">
+    <div class="logo"><img src="assets/logo.png" alt="logo" style="width:100%"></div>
+  <div class="status-holder1" align="center"  style="font-size: 20px; font-weight: bold; "><div class="header-text animate-text col-12">RCTECH SOLUTIONS WIFI</div>
+    <div style="margin-bottom: 20px"></div>
+	<div class="info">
+      <b>IP:</b> <span>$(ip)</span> <b>MAC:</b> <span>$(mac)</span>
+    </div>
+    <div class="status">
+      <span><b>STATUS:</b> <span id="stat" class="blinking1">Disconnected</span></span>
+    </div><br>
+    <div id="box1">
+      <div class="groupBTN">
+        <center>
+          <button id="insrtBTN" onclick="return insertBtnAction(),!1" class="round-btn btn btn-success btn-block bnt-circle sdw"  data-toggle="modal" style="font-display: center;">INSERT <br> COIN</br></button>
+        </center><button id="conctBTN" onclick="return doLogin(),!1">CONNECT / RESUME</button> <label><input id="voucherInput" name="username" placeholder="Type voucher here..."></label> <button id="submitBTN" onclick="return vclogin(),!1">SUBMIT</button>
+      </div>
+      <div class="groupBTN">
+        <center>
+          <a class="ratesBTN" href="rates.html"><button class="ratesBTN">WIFI RATES</button></a>
+        </center>
+      </div><span class="footer">Created by: MCGI PRODUCTION</span>
+    </div>
+    <div hidden="" id="box2">
+      <div class="progress" style="margin-bottom:30px">
+        <div id="progressDiv" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;height:30px"></div>
+      </div>
+      <hr>
+      <span style="font-size:18px;color:#1877f2"><span>Coin:</span> <span id="totalCoin">0</span></span>
+      <hr>
+      <span>Time:</span> <span id="totalTime">0h : 0m : 0s</span>
+      <hr>
+      <button id="buttonDone" onclick="return donepaying(),!1">DONE PAYING</button>
+    </div>
+  </div>
+  <script>
+  var insertingCoin=!1,voucher=replaceAll(mac,":"),timer=null,totalCoinReceived=0,coinCount=new Audio("assets/coin-received.mp3"),insertcoinbg=new Audio("assets/insertcoinbg.mp3");function replaceAll(e,t){for(var n=e;0<n.indexOf(t);)n=n.replace(t,"");return n}function vclogin(){var e=$("#voucherInput").val();""!=e&&($("#loaderDiv").attr("class","spinner"),vcinput=e,vcTopupAPIcall(0))}function vcTopupAPIcall(n){var e="";"undefined"!=typeof uIp&&(e="&ipAddress="+uIp),$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/topUp",data:"voucher="+voucher+"&mac="+mac+e+"&extendTime=0",success:function(e){"true"==e.status?(voucher=e.voucher,null==timer&&(timer=setInterval(checkCoin,500)),convertVoucherAction()):("coin.slot.banned"==e.errorCode?alert("Temporary Banned! fortune telling is forbidden, try again later!"):"coinslot.busy"==e.errorCode&&alert("Coin slot is busy at the moment, try again later!"),location.reload())},error:function(e,t){setTimeout(function(){n<3?vcTopupAPIcall(n+1):(alert("opps! style is not connected"),location.reload())},500)}})}function convertVoucherAction(){var e=vcinput;voucherToConvert=e,$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/convertVoucher",data:"voucher="+voucher+"&convertVoucher="+voucherToConvert,success:function(e){"true"==e.status&&setTimeout(function(){autoAction()},2e3)}})}function insertBtnAction(){return $("#loaderDiv").attr("class","spinner"),history.pushState(null,null,null),$(window).on("popstate",function(e){e.originalEvent.state||history.pushState(null,null,null)}),$.ajax({type:"GET",url:"/status",success:function(e,t,n){e.indexOf("IAMNOTLOGINSTRINGPLEASEDONTREMOVE")<0?location.reload():callTopupAPI(0)}}),!1}function donepaying(){clearInterval(timer),timer=null,insertcoinbg.currentTime=0,insertcoinbg.pause(),$("#loaderDiv").attr("class","spinner"),autoAction()}function callTopupAPI(n){var e="";"undefined"!=typeof uIp&&(e="&ipAddress="+uIp),$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/topUp",data:"voucher="+voucher+"&mac="+mac+e+"&extendTime=0",success:function(e){$("#loaderDiv").attr("class","spinner hidden"),"true"==e.status?($("#stat").html("Please insert coin"),$("#progressDiv").attr("style","width: 100%"),voucher=e.voucher,insertingCoin=!0,box2.hidden=!1,box1.hidden=!0,null==timer&&(timer=setInterval(checkCoin,600)),insertcoinbg.play()):("coin.slot.banned"==e.errorCode?alert("Temporary Banned! due to multiple request for insert coin, please try again later!"):"coinslot.busy"==e.errorCode&&alert("Coin slot is busy at the moment.."),clearInterval(timer),timer=null)},error:function(e,t){setTimeout(function(){n<3?callTopupAPI(n+1):alert("something went wrong please contact WiFi vendo owner!!")},600)}})}function checkCoin(){$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/checkCoin",data:"voucher="+voucher,success:function(e){var t,n,o;"true"==e.status?($("#totalTime").html(secondsToDhms(parseInt(e.timeAdded))),totalCoinReceived=parseInt(e.totalCoin),$("#totalCoin").html(e.totalCoin),coinCount.play()):"coin.not.inserted"==e.errorCode&&(t=parseInt(parseInt(e.remainTime)/1e3),n=parseFloat(e.waitTime),o=parseInt(1e3*t/n*100),$("#progressDiv").attr("style","width: "+o+"%"),0==t&&(clearInterval(timer),timer=null,insertcoinbg.currentTime=0,insertcoinbg.pause(),$("#loaderDiv").attr("class","spinner"),autoAction()))}})}function autoAction(){insertingCoin=!1,0<totalCoinReceived?$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/useVoucher",data:"voucher="+voucher,success:function(e){totalCoinReceived=0,location.reload()}}):$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/cancelTopUp",data:"voucher="+voucher+"&mac="+mac,success:function(e){$("#loaderDiv").attr("class","spinner hidden"),$("#stat").html("Disconnected"),box1.hidden=!1,box2.hidden=!0}})}function secondsToDhms(e){e=Number(e);var t=Math.floor(e/86400),n=Math.floor(e%86400/3600),o=Math.floor(e%3600/60),r=Math.floor(e%60);return(0<t?t+(1==t?" Day ":" Days "):"")+" "+(0<n?n+"":"0")+"h : "+(0<o?o+"":"0")+"m : "+(0<r?r+"":"0")+"s"}insertcoinbg.loop=!0,document.addEventListener("visibilitychange",function(e){document.hidden&&1==insertingCoin&&(clearInterval(timer),timer=null,insertcoinbg.currentTime=0,insertcoinbg.pause(),autoAction())}),window.onload=function(){null!=sessionStorage.getItem("relogin")?(sessionStorage.clear(),location.href="$(link-status)"):$.ajax({type:"GET",url:"/status",success:function(e,t,n){e.indexOf("IAMNOTLOGINSTRINGPLEASEDONTREMOVE")<0&&location.reload()}})},1==insertingCoin&&(window.onbeforeunload=function(){return clearInterval(timer),timer=null,insertcoinbg.currentTime=0,insertcoinbg.pause(),0<totalCoinReceived?$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/useVoucher",data:"voucher="+voucher,success:function(e){sessionStorage.setItem("relogin","1")}}):$.ajax({type:"POST",url:"http://"+vendorIpAddress+"/cancelTopUp",data:"voucher="+voucher+"&mac="+mac,success:function(e){insertingCoin=!1}}),null})
+  </script>
+  <div id="loaderDiv" class="spinner hidden">
+    <center>
+      <img src="assets/loader.gif" alt="loader">
+    </center>
+  </div>
+</body>
+</html>

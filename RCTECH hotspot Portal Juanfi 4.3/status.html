@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="-1">
+  <title>Pisowifi - Status</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="assets/jquery.min.js"></script>
+  <script>
+  var mac="$(mac)",uIp="$(ip)",currentVoucher="$(username)",interfaceName="$(interface-name)",remainingTimer=null
+  </script>
+</head>
+<body>
+  <div class="main">
+    <div class="logo"><img src="assets/mcgi.png" alt="logo" style="width:100%"></div>
+    <div class="info">
+      <b>IP:</b> <span>$(ip)</span> <b>MAC:</b> <span>$(mac)</span>
+    </div>
+    <div class="status">
+      <span><b>STATUS:</b> <span class="blinking2">Connected</span></span>
+    </div><br>
+    <div id="box3" style="padding:0 20px 0 20px">
+      <table>
+        <tr>
+          <td><b>Username</b></td>
+          <td>$(username)</td>
+        </tr>
+        <tr>
+          <td><b>Remaining time</b></td>
+          <td><span style="font-size:25px; font-weight:bold;" id="remainTime"></span></td>
+        </tr>
+        <tr>
+          <td><b>Bytes up / down</b></td>
+          <td>$(bytes-in-nice) / $(bytes-out-nice)</td>
+        </tr>
+        <tr>
+          <td><b>Status refresh</b></td>
+          <td>$(refresh-timeout)</td>
+        </tr>
+      </table><button id="pauseBTN" onclick="return pause(),!1">PAUSE</button>
+    </div>
+    <center>
+      <span class="footer">Created by: MCGI PRODUCTION</span>
+    </center>
+  </div>
+  <script>
+  var sessiontime="$(session-time-left-secs)",uptime="$(uptime-secs)";function pause(){$.ajax({type:"POST",url:"/logout",data:"erase-cookie=true",success:function(e){location.reload()}})}function secondsToDhms(e){e=Number(e);var n=Math.floor(e/86400),o=Math.floor(e%86400/3600),i=Math.floor(e%3600/60),s=Math.floor(e%60);return(0<n?n+(1==n?" Day ":" Days "):"")+" "+(0<o?o+"":"0")+"h : "+(0<i?i+"":"0")+"m : "+(0<s?s+"":"0")+"s"}$(document).ready(function(){var e=sessiontime;"0"==e?$("#remainTime").html("Unlimited"):($("#remainTime").html(secondsToDhms(e)),remainingTimer=setInterval(function(){e--,$("#remainTime").html(secondsToDhms(e)),e<=0&&(clearInterval(remainingTimer),pause())},1e3))}),window.addEventListener("focus",function(){$.ajax({type:"GET",url:"/login",success:function(e,n,o){0<e.indexOf("IAMNOTLOGINSTRINGPLEASEDONTREMOVE")&&location.reload()}})})
+  </script>
+  <div id="loaderDiv" class="spinner hidden">
+    <center>
+      <img src="assets/loader.gif" alt="loader">
+    </center>
+  </div>
+</body>
+</html>
